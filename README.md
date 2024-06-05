@@ -50,13 +50,16 @@ Before you begin, ensure you have the following installed on your system:
             "timezone": "America/New_York",
             "calendarId": "primary"
         }
-        }
         ```
 
     - Create a `.env` file in the root directory with your Discord bot token and Google API credentials:
 
         ```plaintext
         DISCORD_BOT_TOKEN=your_discord_bot_token
+        GOOGLE_CLIENT_ID=your_google_client_id
+        GOOGLE_CLIENT_SECRET=your_google_client_secret
+        GOOGLE_REDIRECT_URI=your_google_redirect_uri
+        GOOGLE_REFRESH_TOKEN=your_google_refresh_token
         ```
 
 5. **Run the Bot**:
