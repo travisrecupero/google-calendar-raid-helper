@@ -1,7 +1,6 @@
 require('dotenv').config();
 const { Client, GatewayIntentBits } = require('discord.js');
 const { google } = require('googleapis');
-const readline = require('readline');
 const { fetchRaidEvent } = require('./fetchRaidEvent');
 const { addEventToCalendar } = require('./addEventToCalendar');
 
@@ -23,6 +22,16 @@ client.on('messageCreate', async message => {
         const event = await fetchRaidEvent(eventId);
         if (event) {
             try {
+                // Send the authorization link immediately after processing the !addevent command
+                const authUrl = getAuthorizationUrl();
+                message.author.send(`Click the following link to authorize the bot: ${authUrl}`)
+                    .then(() => message.reply('Authorization link sent via DM.'))
+                    .catch(error => {
+                        console.error(`Could not send DM to ${message.author.tag}.`, error);
+                        message.reply('Failed to send authorization link. Make sure your DMs are open.');
+                    });
+                
+                // Proceed with adding event to Google Calendar
                 await addEventToCalendar(event);
                 message.reply('Event added to Google Calendar!');
             } catch (error) {
@@ -37,12 +46,9 @@ client.on('messageCreate', async message => {
 
 client.login(process.env.DISCORD_BOT_TOKEN);
 
-const oAuth2Client = new google.auth.OAuth2(
-    process.env.GOOGLE_CLIENT_ID,
-    process.env.GOOGLE_CLIENT_SECRET,
-    process.env.GOOGLE_REDIRECT_URI
-);
+const oAuth2Client = require('./oauthClient');
 
+// Function to get authorization URL
 function getAuthorizationUrl() {
     const scopes = ['https://www.googleapis.com/auth/calendar'];
     const url = oAuth2Client.generateAuthUrl({
@@ -52,35 +58,10 @@ function getAuthorizationUrl() {
     return url;
 }
 
-async function getTokens(authCode) {
-    const { tokens } = await oAuth2Client.getToken(authCode);
-    oAuth2Client.setCredentials(tokens);
-    return tokens;
-}
-
-function promptForAuthCode() {
-    const rl = readline.createInterface({
-        input: process.stdin,
-        output: process.stdout
-    });
-    rl.question('Enter the authorization code from the URL: ', async (authCode) => {
-        try {
-            const tokens = await getTokens(authCode);
-            console.log('Tokens:', tokens);
-            console.log('Please update your .env file with the new GOOGLE_REFRESH_TOKEN.');
-            rl.close();
-        } catch (error) {
-            console.error('Error getting tokens:', error);
-            rl.close();
-        }
-    });
-}
-
 async function main() {
-    if (!process.env.GOOGLE_REFRESH_TOKEN || process.env.GOOGLE_REFRESH_TOKEN === 'your_google_refresh_token') {
+    if (!process.env.GOOGLE_REFRESH_TOKEN) {
         console.log('No refresh token found. Please visit the following URL to authorize the application:');
         console.log(getAuthorizationUrl());
-        promptForAuthCode();
     } else {
         oAuth2Client.setCredentials({ refresh_token: process.env.GOOGLE_REFRESH_TOKEN });
         try {
@@ -90,7 +71,6 @@ async function main() {
         } catch (error) {
             console.error('Invalid refresh token, please re-authorize the application.');
             console.log(getAuthorizationUrl());
-            promptForAuthCode();
         }
     }
 }
