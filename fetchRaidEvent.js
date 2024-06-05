@@ -5,8 +5,8 @@ async function fetchRaidEvent(eventId) {
         const response = await axios.get(`https://raid-helper.dev/api/v2/events/${eventId}`);
         return response.data;
     } catch (error) {
-        console.error('Error fetching event:', error.message);
-        throw error;
+        console.error('Error fetching event:', error);
+        return null;
     }
 }
 

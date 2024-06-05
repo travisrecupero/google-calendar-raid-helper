@@ -1,17 +1,18 @@
 const { google } = require('googleapis');
-const { googleCalendar } = require('./config.json');
+require('dotenv').config();
+const config = require('./config.json');
 
 const { OAuth2 } = google.auth;
 const calendar = google.calendar('v3');
 
 const oAuth2Client = new OAuth2(
-    googleCalendar.clientId,
-    googleCalendar.clientSecret,
-    googleCalendar.redirectUri
+    process.env.GOOGLE_CLIENT_ID,
+    process.env.GOOGLE_CLIENT_SECRET,
+    process.env.GOOGLE_REDIRECT_URI
 );
 
 oAuth2Client.setCredentials({
-    refresh_token: googleCalendar.refreshToken,
+    refresh_token: process.env.GOOGLE_REFRESH_TOKEN,
 });
 
 async function addEventToCalendar(event) {
@@ -23,18 +24,18 @@ async function addEventToCalendar(event) {
         description: event.description,
         start: {
             dateTime: eventStartTime.toISOString(),
-            timeZone: 'America/New_York', // Set your time zone
+            timeZone: config.calendar.timezone,
         },
         end: {
             dateTime: eventEndTime.toISOString(),
-            timeZone: 'America/New_York',
+            timeZone: config.calendar.timezone,
         },
     };
 
     try {
         const response = await calendar.events.insert({
             auth: oAuth2Client,
-            calendarId: 'primary',
+            calendarId: config.calendar.calendarId,
             resource: calendarEvent,
         });
         console.log('Event created: %s', response.data.htmlLink);
@@ -43,14 +44,4 @@ async function addEventToCalendar(event) {
     }
 }
 
-function getAuthorizationUrl() {
-    const scopes = encodeURIComponent('https://www.googleapis.com/auth/calendar.events');
-    return `https://accounts.google.com/o/oauth2/v2/auth` +
-        `?response_type=code` +
-        `&client_id=${googleCalendar.clientId}` +
-        `&redirect_uri=${encodeURIComponent(googleCalendar.redirectUri)}` +
-        `&scope=${scopes}`;
-}
-
-console.log(getAuthorizationUrl);
-module.exports = { addEventToCalendar, getAuthorizationUrl };
+module.exports = { addEventToCalendar };

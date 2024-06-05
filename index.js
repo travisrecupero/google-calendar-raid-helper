@@ -1,9 +1,17 @@
-const { Client, GatewayIntentBits } = require('discord.js');
-const { fetchRaidEvent } = require('./fetchRaidEvent');
-const { addEventToCalendar } = require('./addEventToCalendar');
 require('dotenv').config();
+const { Client, GatewayIntentBits } = require('discord.js');
+const { addEventToCalendar } = require('./addEventToCalendar');
+const { fetchRaidEvent } = require('./fetchRaidEvent');
+const { google } = require('googleapis');
+const config = require('./config.json');
 
-const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent] });
+const client = new Client({
+    intents: [
+        GatewayIntentBits.Guilds,
+        GatewayIntentBits.GuildMessages,
+        GatewayIntentBits.MessageContent
+    ]
+});
 
 client.once('ready', () => {
     console.log(`Logged in as ${client.user.tag}!`);
@@ -11,21 +19,31 @@ client.once('ready', () => {
 
 client.on('messageCreate', async message => {
     if (message.content.startsWith('!addevent')) {
-        const args = message.content.split(' ');
-        const eventId = args[1];
-
-        if (!eventId) {
-            return message.channel.send('Please provide an event ID.');
-        }
-
-        const eventDetails = await fetchRaidEvent(eventId);
-        if (eventDetails) {
-            await addEventToCalendar(eventDetails);
-            message.channel.send('Event added to Google Calendar!');
+        const eventId = message.content.split(' ')[1];
+        const event = await fetchRaidEvent(eventId);
+        if (event) {
+            await addEventToCalendar(event);
+            message.reply('Event added to Google Calendar!');
         } else {
-            message.channel.send('Failed to fetch event details.');
+            message.reply('Error fetching event.');
         }
     }
 });
 
 client.login(process.env.DISCORD_BOT_TOKEN);
+
+function getAuthorizationUrl() {
+    const oauth2Client = new google.auth.OAuth2(
+        process.env.GOOGLE_CLIENT_ID,
+        process.env.GOOGLE_CLIENT_SECRET,
+        process.env.GOOGLE_REDIRECT_URI
+    );
+    const scopes = ['https://www.googleapis.com/auth/calendar'];
+    const url = oauth2Client.generateAuthUrl({
+        access_type: 'offline',
+        scope: scopes
+    });
+    return url;
+}
+
+console.log(getAuthorizationUrl());

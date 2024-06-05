@@ -8,7 +8,6 @@ This project is a Discord bot that integrates with Raid Helper to fetch event de
 - [Installation](#installation)
 - [Configuration](#configuration)
 - [Usage](#usage)
-- [Project Structure](#project-structure)
 - [Contributing](#contributing)
 - [License](#license)
 
@@ -26,8 +25,8 @@ Before you begin, ensure you have the following installed on your system:
 1. **Clone the Repository**:
 
     ```bash
-    git clone https://github.com/yourusername/discord-raidhelper-bot.git
-    cd discord-raidhelper-bot
+    git clone https://github.com/yourusername/google-calendar-raid-helper.git
+    cd google-calendar-raid-helper
     ```
 
 2. **Install Dependencies**:
@@ -43,20 +42,18 @@ Before you begin, ensure you have the following installed on your system:
     - Obtain a refresh token.
 
 4. **Create and Populate Configuration Files**:
-    - Create a `config.json` file in the root directory with your Google API credentials:
+    - Create a `config.json` file containing non-sensitive information such as time zone and calendar ID:
 
         ```json
         {
-            "googleCalendar": {
-                "clientId": "YOUR_CLIENT_ID",
-                "clientSecret": "YOUR_CLIENT_SECRET",
-                "redirectUri": "YOUR_REDIRECT_URI",
-                "refreshToken": "YOUR_REFRESH_TOKEN"
-            }
+        "calendar": {
+            "timezone": "America/New_York",
+            "calendarId": "primary"
+        }
         }
         ```
 
-    - Create a `.env` file in the root directory with your Discord bot token:
+    - Create a `.env` file in the root directory with your Discord bot token and Google API credentials:
 
         ```plaintext
         DISCORD_BOT_TOKEN=your_discord_bot_token
@@ -70,7 +67,7 @@ Before you begin, ensure you have the following installed on your system:
 
 ## Configuration
 
-- **Google API Credentials**: Follow the steps in the [Installation](#installation) section to obtain these credentials and populate the `config.json` file.
+- **Google API Credentials**: Follow the steps in the [Installation](#installation) section to obtain these credentials and populate the `.env` file.
 - **Discord Bot Token**: Create a Discord bot, invite it to your server, and get the token. Populate the `.env` file with this token.
 
 ## Usage
@@ -83,10 +80,10 @@ Before you begin, ensure you have the following installed on your system:
 ## Project Structures
 
 - **index.js**: The main entry point of the bot. Initializes the bot and handles commands.
-- **config.json**: Contains Google API credentials.
+- **config.json**: Contains Google Calendar time zone.
 - **fetchRaidEvent.js**: Module to fetch event details from Raidhelper.
 - **addEventToCalendar.js**: Module to add events to Google Calendar.
-- **.env**: Contains environment variables like the Discord bot token.
+- **.env**: Contains environment variables like the Discord bot token and Google API credentials.
 - **.gitignore**: Specifies files and directories to ignore in version control.
 
 ## Contributing
