@@ -1,6 +1,6 @@
 # google-calendar-raid-helper
 
-This project is a Discord bot that integrates with Raidhelper to fetch event details and add them to Google Calendar. It helps manage WoW raid events efficiently.
+This project is a Discord bot that integrates with Raid Helper to fetch event details and add them to Google Calendar. It helps manage WoW raid events efficiently.
 
 ## Table of Contents
 
