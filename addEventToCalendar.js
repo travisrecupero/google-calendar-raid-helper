@@ -23,11 +23,11 @@ async function addEventToCalendar(event) {
         description: event.description,
         start: {
             dateTime: eventStartTime.toISOString(),
-            timeZone: 'America/Los_Angeles', // Set your time zone
+            timeZone: 'America/New_York', // Set your time zone
         },
         end: {
             dateTime: eventEndTime.toISOString(),
-            timeZone: 'America/Los_Angeles',
+            timeZone: 'America/New_York',
         },
     };
 
@@ -43,4 +43,14 @@ async function addEventToCalendar(event) {
     }
 }
 
-module.exports = { addEventToCalendar };
+function getAuthorizationUrl() {
+    const scopes = encodeURIComponent('https://www.googleapis.com/auth/calendar.events');
+    return `https://accounts.google.com/o/oauth2/v2/auth` +
+        `?response_type=code` +
+        `&client_id=${googleCalendar.clientId}` +
+        `&redirect_uri=${encodeURIComponent(googleCalendar.redirectUri)}` +
+        `&scope=${scopes}`;
+}
+
+console.log(getAuthorizationUrl);
+module.exports = { addEventToCalendar, getAuthorizationUrl };
