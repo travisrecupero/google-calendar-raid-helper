@@ -1,11 +1,7 @@
 const { google } = require('googleapis');
-require('dotenv').config();
 const config = require('./config.json');
 
-const { OAuth2 } = google.auth;
-const calendar = google.calendar('v3');
-
-const oAuth2Client = new OAuth2(
+const oAuth2Client = new google.auth.OAuth2(
     process.env.GOOGLE_CLIENT_ID,
     process.env.GOOGLE_CLIENT_SECRET,
     process.env.GOOGLE_REDIRECT_URI
@@ -14,6 +10,8 @@ const oAuth2Client = new OAuth2(
 oAuth2Client.setCredentials({
     refresh_token: process.env.GOOGLE_REFRESH_TOKEN,
 });
+
+const calendar = google.calendar('v3');
 
 async function addEventToCalendar(event) {
     const eventStartTime = new Date(event.startTime * 1000);
@@ -41,6 +39,7 @@ async function addEventToCalendar(event) {
         console.log('Event created: %s', response.data.htmlLink);
     } catch (error) {
         console.error('Error creating event:', error);
+        throw error;
     }
 }
 
