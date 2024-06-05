@@ -1,3 +1,35 @@
+# Node.js dependencies
 node_modules/
+
+# Environment variables file
 .env
-config.json
+
+# SQLite database file (if you don't want to version control it)
+sqlitedatabase/database.db
+
+# IDE/Editor files
+.vscode/
+.idea/
+*.sublime-workspace
+
+# Logs and other generated files
+*.log
+*.log.*
+*.pid
+*.seed
+*.patch
+
+# macOS-specific files
+.DS_Store
+
+# Compiled output (if applicable)
+/dist/
+/build/
+
+# Operating System-specific files
+Thumbs.db
+ehthumbs.db
+
+# User-specific files
+*.bak
+*.swp
