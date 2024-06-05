@@ -50,7 +50,6 @@ Before you begin, ensure you have the following installed on your system:
             "timezone": "America/New_York",
             "calendarId": "primary"
         }
-        }
         ```
 
     - Create a `.env` file in the root directory with your Discord bot token and Google API credentials:
