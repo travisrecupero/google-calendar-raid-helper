@@ -14,5 +14,8 @@
     "discord.js": "^14.15.3",
     "dotenv": "^16.4.5",
     "googleapis": "^139.0.0"
+  },
+  "overrides": {
+    "undici": "^6.23.0"
   }
 }
